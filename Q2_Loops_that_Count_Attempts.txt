@@ -1,0 +1,122 @@
+Q2 – LOOPS THAT COUNT ATTEMPTS
+Topic: while, for, break, continue, pass, loop-else, and complexity
+
+A bank kiosk allows three non-blank OTP attempts. After three incorrect attempts, the account is locked for 30 minutes.
+
+A. Using while
+
+correct_otp = "1234"
+attempts = 0
+max_attempts = 3
+
+while attempts < max_attempts:
+    otp = input("Enter OTP: ")
+
+    if otp == "":
+        print("Blank entry does not count.")
+        continue
+
+    attempts += 1
+
+    if otp == correct_otp:
+        print("Login successful")
+        break
+    else:
+        print("Incorrect OTP")
+else:
+    print("Account locked for 30 minutes")
+
+
+B. Using for with range(3), correctly allowing blank entries not to count
+
+correct_otp = "1234"
+attempts = 0
+max_attempts = 3
+
+for _ in range(1000000):
+    if attempts >= max_attempts:
+        break
+
+    otp = input("Enter OTP: ")
+
+    if otp == "":
+        print("Blank entry does not count.")
+        continue
+
+    attempts += 1
+
+    if otp == correct_otp:
+        print("Login successful")
+        break
+
+    print("Incorrect OTP")
+else:
+    print("Account locked for 30 minutes")
+
+
+Note: The for-loop example above uses a large safety bound because range(3) alone counts blank entries as loop iterations. A more direct way to use for range(3) is to keep prompting inside each iteration until a non-blank entry is supplied:
+
+correct_otp = "1234"
+attempts = 0
+
+for attempt in range(3):
+    while True:
+        otp = input("Enter OTP: ")
+        if otp != "":
+            break
+        print("Blank entry does not count.")
+
+    attempts += 1
+
+    if otp == correct_otp:
+        print("Login successful")
+        break
+    print("Incorrect OTP")
+else:
+    print("Account locked for 30 minutes")
+
+
+C. Demonstrating pass
+
+for i in range(3):
+    if i == 1:
+        pass
+    print("Attempt number:", i + 1)
+
+
+D. Two extra attempts after a correct security-question answer
+
+correct_otp = "1234"
+attempts = 0
+max_attempts = 3
+extra_attempts_given = False
+
+while attempts < max_attempts:
+    otp = input("Enter OTP: ")
+
+    if otp == "":
+        print("Blank entry does not count.")
+        continue
+
+    attempts += 1
+
+    if otp == correct_otp:
+        print("Login successful")
+        break
+
+    print("Incorrect OTP")
+
+    if attempts == 3 and not extra_attempts_given:
+        answer = input("Security question correct? (yes/no): ")
+        if answer.lower() == "yes":
+            max_attempts += 2
+            extra_attempts_given = True
+            print("Two extra attempts granted.")
+else:
+    print("Account locked for 30 minutes")
+
+
+Complexity:
+Time: O(a), where a is the number of counted attempts.
+Space: O(1).
+A while loop is natural when the number of inputs is not known in advance, especially when blank entries do not count. The loop counter must be updated only after a non-blank entry; otherwise, attempts may be counted incorrectly.

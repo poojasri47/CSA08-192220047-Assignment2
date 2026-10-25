@@ -1,0 +1,102 @@
+Q5 – FUNCTIONS, PARAMETERS AND SCOPE
+Topic: default parameters, mutable objects, return values, and scope
+
+A. Demonstrating the mutable default argument bug
+
+def add_item_buggy(item, order=[]):
+    order.append(item)
+    return order
+
+
+print(add_item_buggy("Tea"))
+print(add_item_buggy("Vada"))
+print("Defaults:", add_item_buggy.__defaults__)
+
+
+B. Correct function using None
+
+def add_item(item, order=None):
+    if order is None:
+        order = []
+    order.append(item)
+    return order
+
+
+print(add_item("Tea"))
+print(add_item("Vada"))
+print(add_item("Coffee"))
+
+
+C. Three independent customers
+
+def add_item(item, order=None):
+    if order is None:
+        order = []
+    order.append(item)
+    return order
+
+
+customer1 = add_item("Tea")
+customer1 = add_item("Vada", customer1)
+
+customer2 = add_item("Coffee")
+customer2 = add_item("Sandwich", customer2)
+
+customer3 = add_item("Juice")
+
+print("Customer 1:", customer1)
+print("Customer 2:", customer2)
+print("Customer 3:", customer3)
+
+
+D. Returning more than one value
+
+def calculate_bill(amount):
+    gst = amount * 0.05
+    total = amount + gst
+    return total, gst
+
+
+total, gst = calculate_bill(500)
+print("GST:", gst)
+print("Total bill:", total)
+
+
+E. Local and global scope
+
+x = 10
+
+def show_local():
+    x = 20
+    print("Local x:", x)
+
+def show_global():
+    global x
+    x = 30
+    print("Global x:", x)
+
+show_local()
+print("Outside function:", x)
+show_global()
+print("Updated global x:", x)
+
+
+F. nonlocal scope
+
+def outer():
+    count = 0
+
+    def inner():
+        nonlocal count
+        count += 1
+        print("Count:", count)
+
+    inner()
+    inner()
+
+outer()
+
+
+Complexity:
+Appending an item to a list takes O(1) amortised time. A customer's order with m items uses O(m) space.
+A default list is created once when the function is defined. Using order=None and creating a new list inside the function avoids sharing the same list across calls.

@@ -1,0 +1,87 @@
+Q7 – DIAGNOSE, REDESIGN AND VALIDATE
+Chosen program: counting the ways to climb temple steps
+
+Objective:
+Replace plain recursive computation, which repeats the same subproblems, with an iterative solution. Compare results, function calls/loop iterations, and elapsed time using identical inputs.
+
+import time
+
+
+# Original solution: plain recursion
+naive_calls = 0
+
+def ways_naive(n):
+    global naive_calls
+    naive_calls += 1
+
+    if n <= 1:
+        return 1
+
+    return ways_naive(n - 1) + ways_naive(n - 2)
+
+
+# Redesigned solution: iteration
+iterative_steps = 0
+
+def ways_iterative(n):
+    global iterative_steps
+    iterative_steps = 0
+
+    if n <= 1:
+        return 1
+
+    a, b = 1, 1
+
+    for _ in range(2, n + 1):
+        iterative_steps += 1
+        a, b = b, a + b
+
+    return b
+
+
+# Compare both implementations on the same inputs
+for n in [10, 20, 25, 30]:
+    naive_calls = 0
+
+    start = time.perf_counter()
+    original_result = ways_naive(n)
+    original_time = time.perf_counter() - start
+
+    start = time.perf_counter()
+    redesigned_result = ways_iterative(n)
+    redesigned_time = time.perf_counter() - start
+
+    print("\nInput n =", n)
+    print("Original result:", original_result)
+    print("Redesigned result:", redesigned_result)
+    print("Results match:", original_result == redesigned_result)
+    print("Original recursive calls:", naive_calls)
+    print("Redesigned loop iterations:", iterative_steps)
+    print(f"Original time: {original_time:.6f} seconds")
+    print(f"Redesigned time: {redesigned_time:.6f} seconds")
+
+
+# Validate results for inputs 1 through 30
+for n in range(1, 31):
+    assert ways_naive(n) == ways_iterative(n)
+
+print("All tests passed!")
+
+
+# Test redesigned solution for 1000 steps
+start = time.perf_counter()
+result = ways_iterative(1000)
+elapsed = time.perf_counter() - start
+
+print("\nTesting redesigned solution for 1000 steps:")
+print("Result:", result)
+print(f"Execution time: {elapsed:.6f} seconds")
+
+
+Report guidance:
+1. Diagnose: plain recursion repeats calculations for the same smaller step counts.
+2. Objective: return the same answer with fewer operations and avoid recursion-depth errors for n = 1000.
+3. Redesign: keep only the previous two results and update them in a loop.
+4. Prediction: iterative calculation should require O(n) iterations instead of exponential recursive calls.
+5. Validate: use the same inputs and check that the results match; record measured times.
+6. Defend: iteration uses O(n) time and O(1) auxiliary space. Plain recursion has O(phi^n) time and O(n) stack space. The recursive version can still be useful for demonstrating recursion on small inputs.

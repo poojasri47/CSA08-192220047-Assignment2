@@ -1,0 +1,82 @@
+Q4 – BUILDING LONG TEXT: + OR join()?
+Topic: string building, timing, immutability, and complexity
+
+import time
+
+items = [f"Item{i}:Rs{i % 50}" for i in range(200_000)]
+
+
+def build_plus(parts):
+    text = ""
+    for p in parts:
+        text += p + ";"
+    return text
+
+
+def build_join(parts):
+    return "".join(p + ";" for p in parts)
+
+
+def build_fstring(parts):
+    return "".join(f"{p};" for p in parts)
+
+
+sizes = [1000, 10000, 200000]
+
+for size in sizes:
+    data = items[:size]
+
+    start = time.perf_counter()
+    a = build_plus(data)
+    plus_time = time.perf_counter() - start
+
+    start = time.perf_counter()
+    b = build_join(data)
+    join_time = time.perf_counter() - start
+
+    start = time.perf_counter()
+    c = build_fstring(data)
+    fstring_time = time.perf_counter() - start
+
+    print("\nNumber of items:", size)
+    print("Same output:", a == b == c)
+    print(f"+= time: {plus_time:.4f} seconds")
+    print(f"join time: {join_time:.4f} seconds")
+    print(f"f-string time: {fstring_time:.4f} seconds")
+
+
+A. Average time over three runs
+
+def measure_average(function, data, runs=3):
+    total = 0
+    for _ in range(runs):
+        start = time.perf_counter()
+        function(data)
+        total += time.perf_counter() - start
+    return total / runs
+
+
+sample = items[:10000]
+print("Average += time:", measure_average(build_plus, sample))
+print("Average join time:", measure_average(build_join, sample))
+print("Average f-string time:", measure_average(build_fstring, sample))
+
+
+B. Alternative using StringIO
+
+from io import StringIO
+
+def build_stringio(parts):
+    output = StringIO()
+    for p in parts:
+        output.write(p)
+        output.write(";")
+    return output.getvalue()
+
+
+result = build_stringio(items[:1000])
+print(result[:100])
+
+
+Complexity:
+join() takes O(n) time for total output length n. Repeated concatenation can take O(n²) in the worst case, though CPython may optimise some += operations. StringIO is useful for incremental writing. Record the actual times produced on your computer; timing varies by system.
